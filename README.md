@@ -10,9 +10,9 @@ At the manual level, trainees build this entirely in a spreadsheet — no automa
 Primary: Microsoft Excel or Google Sheets — either works. Excel is more realistic for enterprise TPRM; Google Sheets is easier for collaboration during training.
 Supporting resources trainees should reference:
 
-ISO 27036 (supplier relationships)
-NIST SP 800-161 (supply chain risk)
-Any publicly available TPRM framework (e.g. Shared Assessments SIG, FSB third-party guidance)
+ISO 27036 (supplier relationships).
+NIST SP 800-161 (supply chain risk).
+Any publicly available TPRM framework (e.g. Shared Assessments SIG, FSB third-party guidance).
 
 No coding required at this stage. The skill being tested is structured thinking and risk taxonomy design.
 
