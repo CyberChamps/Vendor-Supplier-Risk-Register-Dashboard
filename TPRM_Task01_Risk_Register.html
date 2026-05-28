@@ -1,0 +1,1179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TPRM Task #01 — Third-Party Risk Register</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink:        #0d0e12;
+    --ink2:       #2a2d3a;
+    --ink3:       #565c74;
+    --muted:      #8c92a8;
+    --border:     #e2e5ef;
+    --surface:    #f7f8fc;
+    --white:      #ffffff;
+
+    --critical-bg: #fff0f0; --critical-text: #b91c1c; --critical-dot: #ef4444;
+    --high-bg:     #fff7ed; --high-text:     #c2410c; --high-dot:     #f97316;
+    --medium-bg:   #fefce8; --medium-text:   #a16207; --medium-dot:   #eab308;
+    --low-bg:      #f0fdf4; --low-text:      #15803d; --low-dot:      #22c55e;
+
+    --accent: #4f46e5;
+    --accent2: #7c3aed;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f0f2f8;
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── TOP HEADER ── */
+  .page-header {
+    background: var(--ink);
+    padding: 0 2rem;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    border-bottom: 3px solid var(--accent);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 0;
+    border-right: 1px solid rgba(255,255,255,0.1);
+    padding-right: 24px;
+    margin-right: 24px;
+  }
+  .header-brand-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--accent);
+    background: rgba(79,70,229,0.15);
+    padding: 3px 8px;
+    border-radius: 3px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  .header-brand-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.01em;
+  }
+  .header-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+  }
+  .header-breadcrumb {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: rgba(255,255,255,0.35);
+    letter-spacing: 0.04em;
+  }
+  .header-breadcrumb span { color: rgba(255,255,255,0.6); }
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+  .hdr-btn {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 7px 14px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,0.15);
+    background: transparent;
+    color: rgba(255,255,255,0.65);
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all .15s;
+  }
+  .hdr-btn:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.3); }
+  .hdr-btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .hdr-btn.primary:hover { background: #4338ca; }
+
+  /* ── LAYOUT ── */
+  .layout { display: grid; grid-template-columns: 240px 1fr; min-height: calc(100vh - 55px); }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    background: var(--white);
+    border-right: 1px solid var(--border);
+    padding: 1.5rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+  .sidebar-section {
+    padding: 0 1rem 1.25rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 1.25rem;
+  }
+  .sidebar-section:last-child { border-bottom: none; margin-bottom: 0; }
+  .sidebar-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    padding: 0 0.5rem;
+  }
+
+  /* Stat cards */
+  .stat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .stat-card {
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+  }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1;
+  }
+  .stat-lbl { font-size: 10px; font-weight: 500; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .stat-card.c-critical { background: var(--critical-bg); border-color: #fca5a5; }
+  .stat-card.c-critical .stat-num { color: var(--critical-text); }
+  .stat-card.c-high { background: var(--high-bg); border-color: #fdba74; }
+  .stat-card.c-high .stat-num { color: var(--high-text); }
+  .stat-card.c-medium { background: var(--medium-bg); border-color: #fde047; }
+  .stat-card.c-medium .stat-num { color: var(--medium-text); }
+  .stat-card.c-low { background: var(--low-bg); border-color: #86efac; }
+  .stat-card.c-low .stat-num { color: var(--low-text); }
+
+  /* Filter list */
+  .filter-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background .12s;
+    font-size: 13px;
+    color: var(--ink2);
+    font-weight: 400;
+    user-select: none;
+  }
+  .filter-item:hover { background: var(--surface); }
+  .filter-item.active { background: #eef2ff; color: var(--accent); font-weight: 500; }
+  .filter-item.active .fi-count { background: var(--accent); color: #fff; }
+  .fi-left { display: flex; align-items: center; gap: 8px; }
+  .fi-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .fi-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    background: var(--surface);
+    color: var(--muted);
+    border: 1px solid var(--border);
+    padding: 1px 6px;
+    border-radius: 20px;
+    min-width: 22px;
+    text-align: center;
+  }
+
+  /* Review soon */
+  .review-item {
+    padding: 9px 10px;
+    border-radius: 7px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    margin-bottom: 7px;
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .review-item:hover { border-color: var(--accent); }
+  .review-item:last-child { margin-bottom: 0; }
+  .ri-name { font-size: 12px; font-weight: 600; color: var(--ink); margin-bottom: 2px; }
+  .ri-due { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--muted); }
+  .ri-badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: 9px;
+    font-weight: 600;
+    padding: 2px 6px;
+    border-radius: 3px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+
+  /* ── MAIN CONTENT ── */
+  .main { padding: 1.5rem; display: flex; flex-direction: column; gap: 1rem; overflow: hidden; }
+
+  /* Toolbar */
+  .toolbar {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .toolbar-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-right: 4px;
+  }
+  .toolbar-count {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 3px 9px;
+    border-radius: 20px;
+  }
+  .toolbar-spacer { flex: 1; }
+  .search-wrap { position: relative; }
+  .search-wrap input {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    padding: 7px 12px 7px 32px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--ink);
+    outline: none;
+    width: 200px;
+    transition: border-color .15s, width .2s;
+  }
+  .search-wrap input:focus { border-color: var(--accent); width: 240px; }
+  .search-wrap::before {
+    content: '⌕';
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 15px;
+    color: var(--muted);
+    pointer-events: none;
+  }
+  .sort-select {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    padding: 7px 10px;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    background: var(--surface);
+    color: var(--ink2);
+    outline: none;
+    cursor: pointer;
+  }
+
+  /* ── REGISTER TABLE ── */
+  .register-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .register-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .register-table thead tr {
+    background: var(--ink);
+    color: rgba(255,255,255,0.7);
+  }
+  .register-table th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 11px 14px;
+    text-align: left;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color .12s;
+  }
+  .register-table th:hover { color: #fff; }
+  .register-table th.sorted { color: #a5b4fc; }
+
+  .register-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .1s;
+    cursor: pointer;
+  }
+  .register-table tbody tr:hover { background: #f7f8ff; }
+  .register-table tbody tr:last-child { border-bottom: none; }
+  .register-table tbody tr.hidden { display: none; }
+
+  .register-table td {
+    padding: 11px 14px;
+    color: var(--ink2);
+    vertical-align: middle;
+  }
+
+  .td-vendor { display: flex; flex-direction: column; gap: 2px; }
+  .td-vendor-name { font-weight: 600; color: var(--ink); font-size: 13px; }
+  .td-vendor-cat { font-size: 11px; color: var(--muted); }
+
+  .td-mono { font-family: 'DM Mono', monospace; font-size: 12px; }
+
+  /* Risk tier badges */
+  .tier-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .tier-badge::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .tier-badge.critical { background: var(--critical-bg); color: var(--critical-text); }
+  .tier-badge.critical::before { background: var(--critical-dot); }
+  .tier-badge.high { background: var(--high-bg); color: var(--high-text); }
+  .tier-badge.high::before { background: var(--high-dot); }
+  .tier-badge.medium { background: var(--medium-bg); color: var(--medium-text); }
+  .tier-badge.medium::before { background: var(--medium-dot); }
+  .tier-badge.low { background: var(--low-bg); color: var(--low-text); }
+  .tier-badge.low::before { background: var(--low-dot); }
+
+  /* Status badges */
+  .status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 9px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .status-badge.active { background: #f0fdf4; color: #15803d; }
+  .status-badge.review { background: #eff6ff; color: #1d4ed8; }
+  .status-badge.offboarding { background: #faf5ff; color: #7e22ce; }
+
+  /* Score bar */
+  .score-cell { display: flex; align-items: center; gap: 8px; }
+  .score-bar-wrap { flex: 1; max-width: 80px; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .score-bar { height: 100%; border-radius: 3px; transition: width .3s; }
+  .score-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; min-width: 28px; text-align: right; }
+
+  /* Data column */
+  .data-badge {
+    display: inline-flex;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    background: #f1f5f9;
+    color: #475569;
+    border: 1px solid #cbd5e1;
+    margin: 1px;
+  }
+  .data-badge.pii { background: #fef2f2; color: #b91c1c; border-color: #fca5a5; }
+  .data-badge.financial { background: #fff7ed; color: #c2410c; border-color: #fdba74; }
+  .data-badge.regulated { background: #faf5ff; color: #7e22ce; border-color: #d8b4fe; }
+
+  /* ── ROW DETAIL PANEL ── */
+  .detail-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(13,14,18,0.55);
+    z-index: 200;
+    backdrop-filter: blur(3px);
+  }
+  .detail-overlay.open { display: flex; align-items: flex-start; justify-content: flex-end; }
+  .detail-panel {
+    background: var(--white);
+    width: 480px;
+    max-width: 95vw;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: -10px 0 40px rgba(0,0,0,0.18);
+    animation: slideIn .2s ease-out;
+  }
+  @keyframes slideIn { from { transform: translateX(30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+
+  .dp-header {
+    background: var(--ink);
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .dp-title { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; color: #fff; letter-spacing: -0.02em; }
+  .dp-subtitle { font-size: 12px; color: rgba(255,255,255,0.45); margin-top: 3px; }
+  .dp-close {
+    background: rgba(255,255,255,0.1);
+    border: none;
+    color: rgba(255,255,255,0.6);
+    width: 30px;
+    height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background .12s;
+  }
+  .dp-close:hover { background: rgba(255,255,255,0.2); color: #fff; }
+
+  .dp-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
+
+  .dp-section-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    font-weight: 500;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border);
+  }
+  .dp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dp-field { display: flex; flex-direction: column; gap: 3px; }
+  .dp-field-label { font-size: 11px; color: var(--muted); font-weight: 500; }
+  .dp-field-value { font-size: 13px; color: var(--ink); font-weight: 500; }
+  .dp-field-value.mono { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 400; }
+
+  .dp-score-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .dp-score-row:last-child { border-bottom: none; }
+  .dp-score-dim { color: var(--ink2); font-weight: 500; }
+  .dp-score-bar-wrap { flex: 1; max-width: 120px; margin: 0 12px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .dp-score-bar { height: 100%; border-radius: 2px; background: var(--accent); }
+  .dp-score-val { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; min-width: 20px; text-align: right; }
+
+  .dp-finding {
+    display: flex;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 7px;
+    background: var(--surface);
+    border-left: 3px solid;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--ink2);
+    margin-bottom: 7px;
+  }
+  .dp-finding:last-child { margin-bottom: 0; }
+  .dp-finding.risk { border-color: var(--critical-dot); background: var(--critical-bg); color: #7f1d1d; }
+  .dp-finding.note { border-color: #60a5fa; background: #eff6ff; color: #1e3a5f; }
+  .dp-finding.action { border-color: var(--low-dot); background: var(--low-bg); color: #14532d; }
+
+  /* Responsive table scroll */
+  .table-scroll { overflow-x: auto; }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    text-align: center;
+    padding: 1.25rem;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+    background: var(--white);
+    margin-top: auto;
+  }
+
+  /* Animations */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .register-wrap { animation: fadeUp .3s ease-out .1s both; }
+  .toolbar       { animation: fadeUp .3s ease-out both; }
+
+  /* Print */
+  @media print {
+    .page-header, .sidebar, .toolbar .hdr-btn, .sort-select, .search-wrap { display: none; }
+    .layout { grid-template-columns: 1fr; }
+    body { background: #fff; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── PAGE HEADER ── -->
+<header class="page-header">
+  <div class="header-brand">
+    <span class="header-brand-tag">Task #01</span>
+    <span class="header-brand-title">TPRM Programme</span>
+  </div>
+  <div class="header-meta">
+    <span class="header-breadcrumb">Manual Level &nbsp;/&nbsp; <span>Third-Party Risk Register</span></span>
+  </div>
+  <div class="header-actions">
+    <button class="hdr-btn" onclick="exportCSV()">↓ Export CSV</button>
+    <button class="hdr-btn primary" onclick="openAdd()">+ Add Vendor</button>
+  </div>
+</header>
+
+<!-- ── LAYOUT ── -->
+<div class="layout">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+
+    <!-- Stats -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Portfolio Summary</div>
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-num" id="total-count">10</span>
+          <span class="stat-lbl">Total</span>
+        </div>
+        <div class="stat-card c-critical">
+          <span class="stat-num" id="critical-count">2</span>
+          <span class="stat-lbl">Critical</span>
+        </div>
+        <div class="stat-card c-high">
+          <span class="stat-num" id="high-count">3</span>
+          <span class="stat-lbl">High</span>
+        </div>
+        <div class="stat-card c-medium">
+          <span class="stat-num" id="medium-count">3</span>
+          <span class="stat-lbl">Medium</span>
+        </div>
+        <div class="stat-card c-low">
+          <span class="stat-num" id="low-count">2</span>
+          <span class="stat-lbl">Low</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tier filter -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Filter by Tier</div>
+      <div class="filter-item active" onclick="setFilter('all', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:#94a3b8"></div>All vendors</div>
+        <span class="fi-count" id="fc-all">10</span>
+      </div>
+      <div class="filter-item" onclick="setFilter('Critical', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:var(--critical-dot)"></div>Critical</div>
+        <span class="fi-count" id="fc-critical">2</span>
+      </div>
+      <div class="filter-item" onclick="setFilter('High', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:var(--high-dot)"></div>High</div>
+        <span class="fi-count" id="fc-high">3</span>
+      </div>
+      <div class="filter-item" onclick="setFilter('Medium', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:var(--medium-dot)"></div>Medium</div>
+        <span class="fi-count" id="fc-medium">3</span>
+      </div>
+      <div class="filter-item" onclick="setFilter('Low', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:var(--low-dot)"></div>Low</div>
+        <span class="fi-count" id="fc-low">2</span>
+      </div>
+    </div>
+
+    <!-- Status filter -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Filter by Status</div>
+      <div class="filter-item" onclick="setStatusFilter('Active', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:#22c55e"></div>Active</div>
+        <span class="fi-count" id="fc-active">8</span>
+      </div>
+      <div class="filter-item" onclick="setStatusFilter('Under Review', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:#60a5fa"></div>Under Review</div>
+        <span class="fi-count" id="fc-review">1</span>
+      </div>
+      <div class="filter-item" onclick="setStatusFilter('Offboarding', this)">
+        <div class="fi-left"><div class="fi-dot" style="background:#c084fc"></div>Offboarding</div>
+        <span class="fi-count" id="fc-offboarding">1</span>
+      </div>
+    </div>
+
+    <!-- Due for review -->
+    <div class="sidebar-section">
+      <div class="sidebar-label">Due for Review</div>
+      <div id="review-list"></div>
+    </div>
+
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main class="main">
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <span class="toolbar-title">Vendor Register</span>
+      <span class="toolbar-count" id="showing-count">Showing 10 vendors</span>
+      <div class="toolbar-spacer"></div>
+      <div class="search-wrap">
+        <input type="text" id="search-input" placeholder="Search vendors…" oninput="applyFilters()">
+      </div>
+      <select class="sort-select" id="sort-select" onchange="applyFilters()">
+        <option value="name">Sort: Name</option>
+        <option value="score-desc">Sort: Score ↓</option>
+        <option value="score-asc">Sort: Score ↑</option>
+        <option value="review">Sort: Review Date</option>
+        <option value="tier">Sort: Tier</option>
+      </select>
+    </div>
+
+    <!-- Register table -->
+    <div class="register-wrap">
+      <div class="table-scroll">
+        <table class="register-table" id="register-table">
+          <thead>
+            <tr>
+              <th onclick="sortBy('id')">#</th>
+              <th onclick="sortBy('name')">Vendor</th>
+              <th onclick="sortBy('tier')">Risk Tier</th>
+              <th onclick="sortBy('score')">Composite Score</th>
+              <th>Data Classification</th>
+              <th onclick="sortBy('owner')">Internal Owner</th>
+              <th onclick="sortBy('review')">Next Review</th>
+              <th onclick="sortBy('status')">Status</th>
+              <th>Findings</th>
+            </tr>
+          </thead>
+          <tbody id="register-body">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- ── DETAIL PANEL ── -->
+<div class="detail-overlay" id="detail-overlay" onclick="closeDetail(event)">
+  <div class="detail-panel" id="detail-panel">
+    <div class="dp-header">
+      <div>
+        <div class="dp-title" id="dp-title">—</div>
+        <div class="dp-subtitle" id="dp-subtitle">—</div>
+      </div>
+      <button class="dp-close" onclick="closeDetailBtn()">✕</button>
+    </div>
+    <div class="dp-body" id="dp-body"></div>
+  </div>
+</div>
+
+<footer class="page-footer">
+  AUTOMATION IN TPRM — TRAINING PROGRAMME &nbsp;·&nbsp; TASK #01: THIRD-PARTY RISK REGISTER &nbsp;·&nbsp; MANUAL LEVEL
+</footer>
+
+<script>
+// ─────────────────────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────────────────────
+const vendors = [
+  {
+    id: '001', name: 'NexusCloud Ltd', category: 'Cloud Infrastructure',
+    tier: 'Critical', score: 4.6,
+    dataSensitivity: 5, operationalDep: 5, regulatoryExp: 4, financialExp: 4,
+    dataTypes: ['PII', 'Financial', 'Regulated'],
+    owner: 'Sarah Chen', ownerTitle: 'Head of IT Risk',
+    lastAssessment: '2024-11-15', nextReview: '2025-06-15',
+    contractExpiry: '2026-01-31', contractValue: '£2.4M',
+    status: 'Active', openFindings: 3,
+    country: 'United Kingdom', regNo: 'GB-7823441',
+    description: 'Primary cloud hosting provider for all production workloads. Single point of failure for core banking platform.',
+    keyFindings: [
+      { type: 'risk', text: 'Penetration test report is 14 months old — exceeds 12-month policy requirement.' },
+      { type: 'risk', text: 'Sub-processor list not disclosed for 3 EU data processing agreements.' },
+      { type: 'action', text: 'Request updated pen test and sub-processor disclosure by 30 Jun 2025.' }
+    ]
+  },
+  {
+    id: '002', name: 'DataGuard Analytics', category: 'Data Analytics Platform',
+    tier: 'Critical', score: 4.2,
+    dataSensitivity: 5, operationalDep: 4, regulatoryExp: 4, financialExp: 4,
+    dataTypes: ['PII', 'Financial'],
+    owner: 'Marcus Webb', ownerTitle: 'Chief Data Officer',
+    lastAssessment: '2025-01-08', nextReview: '2025-07-08',
+    contractExpiry: '2025-12-31', contractValue: '£1.8M',
+    status: 'Under Review', openFindings: 5,
+    country: 'Ireland', regNo: 'IE-4421889',
+    description: 'Processes customer behavioural data and financial analytics. Subject to GDPR and FCA data governance requirements.',
+    keyFindings: [
+      { type: 'risk', text: 'BCP test has not been conducted in 18 months. Documented RPO of 4 hours is unverified.' },
+      { type: 'risk', text: 'ISO 27001 scope does not cover the specific processing environment used for our workloads.' },
+      { type: 'risk', text: 'Two material data incidents reported to ICO in prior 24 months — ongoing monitoring required.' },
+      { type: 'action', text: 'Escalated to enhanced monitoring. Formal remediation plan required within 45 days.' }
+    ]
+  },
+  {
+    id: '003', name: 'SecureConnect Networks', category: 'Network & Connectivity',
+    tier: 'High', score: 3.7,
+    dataSensitivity: 3, operationalDep: 5, regulatoryExp: 3, financialExp: 3,
+    dataTypes: ['Regulated'],
+    owner: 'Priya Sharma', ownerTitle: 'VP Technology',
+    lastAssessment: '2024-09-20', nextReview: '2025-09-20',
+    contractExpiry: '2027-03-31', contractValue: '£900K',
+    status: 'Active', openFindings: 2,
+    country: 'United States', regNo: 'US-DE-5512007',
+    description: 'MPLS network provider connecting 14 office locations and all DR facilities. No viable alternative within 6-month timeframe.',
+    keyFindings: [
+      { type: 'risk', text: 'SLA for incident response (4h) has been breached twice in the past 12 months without financial penalty.' },
+      { type: 'note', text: 'Cyber Essentials Plus certification confirmed valid until Nov 2025.' },
+      { type: 'action', text: 'Review SLA breach clause at next contract renewal. Consider dual-provider strategy.' }
+    ]
+  },
+  {
+    id: '004', name: 'Fortius Payments EU', category: 'Payment Processing',
+    tier: 'High', score: 3.5,
+    dataSensitivity: 5, operationalDep: 3, regulatoryExp: 4, financialExp: 3,
+    dataTypes: ['Financial', 'PII'],
+    owner: 'James Okafor', ownerTitle: 'Head of Payments',
+    lastAssessment: '2025-02-14', nextReview: '2026-02-14',
+    contractExpiry: '2027-06-30', contractValue: '£640K',
+    status: 'Active', openFindings: 1,
+    country: 'Netherlands', regNo: 'NL-KvK-78901234',
+    description: 'PCI-DSS Level 1 payment processor for EU card transactions. Regulated by DNB. Handles ~4M transactions per month.',
+    keyFindings: [
+      { type: 'note', text: 'PCI-DSS Level 1 Attestation of Compliance confirmed current. SOC 2 Type II in scope.' },
+      { type: 'action', text: 'Monitor DNB supervisory findings — one open regulatory enquiry noted in latest annual report.' }
+    ]
+  },
+  {
+    id: '005', name: 'LegalEagle LLP', category: 'Legal Services',
+    tier: 'High', score: 3.2,
+    dataSensitivity: 4, operationalDep: 2, regulatoryExp: 3, financialExp: 3,
+    dataTypes: ['PII', 'Regulated'],
+    owner: 'Rachel Torres', ownerTitle: 'General Counsel',
+    lastAssessment: '2024-07-01', nextReview: '2025-07-01',
+    contractExpiry: '2026-09-30', contractValue: '£480K',
+    status: 'Active', openFindings: 1,
+    country: 'United Kingdom', regNo: 'SRA-789014',
+    description: 'Retained legal counsel. Handles M&A due diligence, regulatory disputes, and employment matters. Access to highly confidential documents.',
+    keyFindings: [
+      { type: 'note', text: 'SRA-regulated firm. Cyber insurance confirmed at £5M. Matter-specific NDAs in place.' },
+      { type: 'action', text: 'Update DPA to reflect new sub-processor disclosure requirements under UK GDPR Article 28.' }
+    ]
+  },
+  {
+    id: '006', name: 'PeopleSoft HR Systems', category: 'HR Technology',
+    tier: 'Medium', score: 2.8,
+    dataSensitivity: 4, operationalDep: 2, regulatoryExp: 3, financialExp: 2,
+    dataTypes: ['PII'],
+    owner: 'Lisa Park', ownerTitle: 'CHRO',
+    lastAssessment: '2024-04-10', nextReview: '2025-10-10',
+    contractExpiry: '2026-04-30', contractValue: '£310K',
+    status: 'Active', openFindings: 0,
+    country: 'United States', regNo: 'US-CA-2234561',
+    description: 'HRIS platform managing payroll, benefits, and employee data for 1,200 staff across 6 jurisdictions.',
+    keyFindings: [
+      { type: 'note', text: 'SOC 2 Type II report reviewed — no exceptions noted. Annual assessment sufficient.' }
+    ]
+  },
+  {
+    id: '007', name: 'CleanDesk Facilities', category: 'Facilities Management',
+    tier: 'Medium', score: 2.3,
+    dataSensitivity: 2, operationalDep: 2, regulatoryExp: 2, financialExp: 3,
+    dataTypes: [],
+    owner: 'Tom Bradley', ownerTitle: 'COO',
+    lastAssessment: '2023-11-15', nextReview: '2025-11-15',
+    contractExpiry: '2025-08-31', contractValue: '£220K',
+    status: 'Active', openFindings: 0,
+    country: 'United Kingdom', regNo: 'GB-4490021',
+    description: 'Office cleaning and facilities management across 3 London sites. Staff have access to non-secure areas only. No IT system access.',
+    keyFindings: [
+      { type: 'note', text: 'Low data access. Physical access restricted to non-secure common areas. Annual review sufficient.' }
+    ]
+  },
+  {
+    id: '008', name: 'Optima Consulting Group', category: 'Management Consulting',
+    tier: 'Medium', score: 2.1,
+    dataSensitivity: 3, operationalDep: 1, regulatoryExp: 2, financialExp: 2,
+    dataTypes: ['PII'],
+    owner: 'Marcus Webb', ownerTitle: 'Chief Data Officer',
+    lastAssessment: '2024-06-20', nextReview: '2025-12-20',
+    contractExpiry: '2025-06-30', contractValue: '£175K',
+    status: 'Offboarding', openFindings: 0,
+    country: 'United Kingdom', regNo: 'GB-8812334',
+    description: 'Strategy consulting engagement concluding June 2025. Limited data access under NDA. Offboarding process initiated.',
+    keyFindings: [
+      { type: 'note', text: 'Offboarding checklist initiated. Data deletion confirmation pending. Access revoked 2025-05-01.' }
+    ]
+  },
+  {
+    id: '009', name: 'TrustPrint Marketing', category: 'Marketing Services',
+    tier: 'Low', score: 1.8,
+    dataSensitivity: 2, operationalDep: 1, regulatoryExp: 1, financialExp: 2,
+    dataTypes: [],
+    owner: 'Sarah Chen', ownerTitle: 'Head of IT Risk',
+    lastAssessment: '2023-08-01', nextReview: '2026-08-01',
+    contractExpiry: '2026-12-31', contractValue: '£95K',
+    status: 'Active', openFindings: 0,
+    country: 'United Kingdom', regNo: 'GB-3301445',
+    description: 'Print and branded merchandise supplier. No access to personal data or IT systems. Minimal operational dependency.',
+    keyFindings: [
+      { type: 'note', text: 'Self-certification questionnaire completed. No data access. 3-year review cycle appropriate.' }
+    ]
+  },
+  {
+    id: '010', name: 'ExpressCourier Ltd', category: 'Logistics & Courier',
+    tier: 'Low', score: 1.4,
+    dataSensitivity: 1, operationalDep: 1, regulatoryExp: 1, financialExp: 2,
+    dataTypes: [],
+    owner: 'Tom Bradley', ownerTitle: 'COO',
+    lastAssessment: '2023-05-10', nextReview: '2026-05-10',
+    contractExpiry: '2026-05-31', contractValue: '£42K',
+    status: 'Active', openFindings: 0,
+    country: 'United Kingdom', regNo: 'GB-1109877',
+    description: 'Document and package courier for physical mail. No electronic data access. Discretionary, substitutable service.',
+    keyFindings: [
+      { type: 'note', text: 'Lightweight self-certification. No PII or sensitive data involved. Minimal review required.' }
+    ]
+  }
+];
+
+// ─────────────────────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────────────────────
+let activeFilter = 'all';
+let activeStatusFilter = null;
+let currentSort = 'id';
+let sortAsc = true;
+
+function tierClass(tier) {
+  return { 'Critical': 'critical', 'High': 'high', 'Medium': 'medium', 'Low': 'low' }[tier] || 'low';
+}
+
+function scoreColor(score) {
+  if (score >= 4) return '#ef4444';
+  if (score >= 3) return '#f97316';
+  if (score >= 2) return '#eab308';
+  return '#22c55e';
+}
+
+function dataBadges(types) {
+  const map = { 'PII': 'pii', 'Financial': 'financial', 'Regulated': 'regulated' };
+  if (!types.length) return '<span style="color:var(--muted);font-size:11px">None</span>';
+  return types.map(t => `<span class="data-badge ${map[t]||''}">${t}</span>`).join('');
+}
+
+function statusBadge(status) {
+  const map = { 'Active': 'active', 'Under Review': 'review', 'Offboarding': 'offboarding' };
+  return `<span class="status-badge ${map[status]||'active'}">${status}</span>`;
+}
+
+function formatDate(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+}
+
+function daysUntil(d) {
+  const diff = new Date(d) - new Date();
+  return Math.ceil(diff / 86400000);
+}
+
+function renderTable(data) {
+  const body = document.getElementById('register-body');
+  body.innerHTML = '';
+  data.forEach(v => {
+    const pct = (v.score / 5) * 100;
+    const tr = document.createElement('tr');
+    tr.setAttribute('data-id', v.id);
+    tr.innerHTML = `
+      <td class="td-mono" style="color:var(--muted)">${v.id}</td>
+      <td>
+        <div class="td-vendor">
+          <span class="td-vendor-name">${v.name}</span>
+          <span class="td-vendor-cat">${v.category}</span>
+        </div>
+      </td>
+      <td><span class="tier-badge ${tierClass(v.tier)}">${v.tier}</span></td>
+      <td>
+        <div class="score-cell">
+          <div class="score-bar-wrap"><div class="score-bar" style="width:${pct}%;background:${scoreColor(v.score)}"></div></div>
+          <span class="score-val" style="color:${scoreColor(v.score)}">${v.score.toFixed(1)}</span>
+        </div>
+      </td>
+      <td>${dataBadges(v.dataTypes)}</td>
+      <td>
+        <div class="td-vendor">
+          <span style="font-weight:500;font-size:12px;color:var(--ink)">${v.owner}</span>
+          <span style="font-size:11px;color:var(--muted)">${v.ownerTitle}</span>
+        </div>
+      </td>
+      <td class="td-mono">${formatDate(v.nextReview)}</td>
+      <td>${statusBadge(v.status)}</td>
+      <td>
+        ${v.openFindings > 0
+          ? `<span style="font-family:'DM Mono',monospace;font-size:11px;font-weight:600;color:var(--critical-text);background:var(--critical-bg);padding:2px 8px;border-radius:4px">${v.openFindings} open</span>`
+          : `<span style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted)">Clear</span>`}
+      </td>
+    `;
+    tr.addEventListener('click', () => openDetail(v.id));
+    body.appendChild(tr);
+  });
+  document.getElementById('showing-count').textContent = `Showing ${data.length} vendor${data.length !== 1 ? 's' : ''}`;
+}
+
+function renderSidebar() {
+  const counts = { Critical: 0, High: 0, Medium: 0, Low: 0, Active: 0, 'Under Review': 0, Offboarding: 0 };
+  vendors.forEach(v => { counts[v.tier]++; counts[v.status]++; });
+  document.getElementById('critical-count').textContent = counts.Critical;
+  document.getElementById('high-count').textContent = counts.High;
+  document.getElementById('medium-count').textContent = counts.Medium;
+  document.getElementById('low-count').textContent = counts.Low;
+  document.getElementById('fc-all').textContent = vendors.length;
+  document.getElementById('fc-critical').textContent = counts.Critical;
+  document.getElementById('fc-high').textContent = counts.High;
+  document.getElementById('fc-medium').textContent = counts.Medium;
+  document.getElementById('fc-low').textContent = counts.Low;
+  document.getElementById('fc-active').textContent = counts.Active;
+  document.getElementById('fc-review').textContent = counts['Under Review'];
+  document.getElementById('fc-offboarding').textContent = counts.Offboarding;
+
+  // Review soon — next 90 days
+  const soon = vendors
+    .filter(v => v.nextReview && daysUntil(v.nextReview) <= 90 && daysUntil(v.nextReview) > 0)
+    .sort((a, b) => new Date(a.nextReview) - new Date(b.nextReview));
+  const rl = document.getElementById('review-list');
+  rl.innerHTML = '';
+  if (!soon.length) {
+    rl.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:4px 10px">No reviews due in 90 days</div>';
+  } else {
+    soon.forEach(v => {
+      const days = daysUntil(v.nextReview);
+      const urgency = days <= 14 ? 'var(--critical-dot)' : days <= 30 ? 'var(--high-dot)' : 'var(--medium-dot)';
+      const div = document.createElement('div');
+      div.className = 'review-item';
+      div.innerHTML = `
+        <div class="ri-name">${v.name}</div>
+        <div class="ri-due">${formatDate(v.nextReview)}</div>
+        <span class="ri-badge" style="background:${urgency}22;color:${urgency}">${days}d remaining</span>
+      `;
+      div.onclick = () => openDetail(v.id);
+      rl.appendChild(div);
+    });
+  }
+}
+
+// ─────────────────────────────────────────────────────────────
+// FILTERING & SORTING
+// ─────────────────────────────────────────────────────────────
+function applyFilters() {
+  const q = document.getElementById('search-input').value.toLowerCase();
+  const sortVal = document.getElementById('sort-select').value;
+
+  let data = vendors.filter(v => {
+    const tierOk = activeFilter === 'all' || v.tier === activeFilter;
+    const statusOk = !activeStatusFilter || v.status === activeStatusFilter;
+    const searchOk = !q || v.name.toLowerCase().includes(q) || v.category.toLowerCase().includes(q) || v.owner.toLowerCase().includes(q);
+    return tierOk && statusOk && searchOk;
+  });
+
+  // Sort
+  data = [...data].sort((a, b) => {
+    if (sortVal === 'name') return a.name.localeCompare(b.name);
+    if (sortVal === 'score-desc') return b.score - a.score;
+    if (sortVal === 'score-asc') return a.score - b.score;
+    if (sortVal === 'review') return new Date(a.nextReview) - new Date(b.nextReview);
+    if (sortVal === 'tier') {
+      const order = { Critical: 0, High: 1, Medium: 2, Low: 3 };
+      return order[a.tier] - order[b.tier];
+    }
+    return a.id.localeCompare(b.id);
+  });
+
+  renderTable(data);
+}
+
+function setFilter(tier, el) {
+  activeFilter = tier;
+  activeStatusFilter = null;
+  document.querySelectorAll('.filter-item').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  applyFilters();
+}
+
+function setStatusFilter(status, el) {
+  if (activeStatusFilter === status) {
+    activeStatusFilter = null;
+    el.classList.remove('active');
+    activeFilter = 'all';
+    document.querySelector('.filter-item[onclick*="all"]').classList.add('active');
+  } else {
+    activeStatusFilter = status;
+    activeFilter = 'all';
+    document.querySelectorAll('.filter-item').forEach(e => e.classList.remove('active'));
+    el.classList.add('active');
+  }
+  applyFilters();
+}
+
+function sortBy(field) {
+  document.getElementById('sort-select').value =
+    field === 'score' ? 'score-desc' :
+    field === 'review' ? 'review' :
+    field === 'tier' ? 'tier' :
+    field === 'name' ? 'name' : 'id';
+  applyFilters();
+}
+
+// ─────────────────────────────────────────────────────────────
+// DETAIL PANEL
+// ─────────────────────────────────────────────────────────────
+function openDetail(id) {
+  const v = vendors.find(x => x.id === id);
+  if (!v) return;
+
+  document.getElementById('dp-title').textContent = v.name;
+  document.getElementById('dp-subtitle').textContent = `${v.category} · ${v.country}`;
+
+  const scoreDims = [
+    { label: 'Data sensitivity',      val: v.dataSensitivity },
+    { label: 'Operational dependency', val: v.operationalDep },
+    { label: 'Regulatory exposure',    val: v.regulatoryExp },
+    { label: 'Financial exposure',     val: v.financialExp },
+  ];
+
+  const body = document.getElementById('dp-body');
+  body.innerHTML = `
+    <div>
+      <div class="dp-section-title">Overview</div>
+      <div class="dp-grid">
+        <div class="dp-field"><span class="dp-field-label">Risk Tier</span><span class="dp-field-value"><span class="tier-badge ${tierClass(v.tier)}">${v.tier}</span></span></div>
+        <div class="dp-field"><span class="dp-field-label">Composite Score</span><span class="dp-field-value" style="color:${scoreColor(v.score)};font-family:'DM Mono',monospace;font-size:18px;font-weight:700">${v.score.toFixed(1)}/5.0</span></div>
+        <div class="dp-field"><span class="dp-field-label">Status</span><span class="dp-field-value">${statusBadge(v.status)}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Open Findings</span><span class="dp-field-value mono">${v.openFindings || 'None'}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Internal Owner</span><span class="dp-field-value">${v.owner}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Owner Role</span><span class="dp-field-value">${v.ownerTitle}</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="dp-section-title">Description</div>
+      <p style="font-size:13px;color:var(--ink2);line-height:1.6">${v.description}</p>
+    </div>
+
+    <div>
+      <div class="dp-section-title">Risk Scoring Dimensions</div>
+      ${scoreDims.map(d => `
+        <div class="dp-score-row">
+          <span class="dp-score-dim">${d.label}</span>
+          <div class="dp-score-bar-wrap"><div class="dp-score-bar" style="width:${d.val*20}%;background:${scoreColor(d.val)}"></div></div>
+          <span class="dp-score-val" style="color:${scoreColor(d.val)}">${d.val}/5</span>
+        </div>
+      `).join('')}
+    </div>
+
+    <div>
+      <div class="dp-section-title">Contract & Assessment</div>
+      <div class="dp-grid">
+        <div class="dp-field"><span class="dp-field-label">Last Assessment</span><span class="dp-field-value mono">${formatDate(v.lastAssessment)}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Next Review</span><span class="dp-field-value mono">${formatDate(v.nextReview)}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Contract Expiry</span><span class="dp-field-value mono">${formatDate(v.contractExpiry)}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Contract Value</span><span class="dp-field-value mono">${v.contractValue}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Registration No.</span><span class="dp-field-value mono" style="font-size:11px">${v.regNo}</span></div>
+        <div class="dp-field"><span class="dp-field-label">Data Types</span><span class="dp-field-value">${dataBadges(v.dataTypes)}</span></div>
+      </div>
+    </div>
+
+    <div>
+      <div class="dp-section-title">Key Findings & Actions</div>
+      ${v.keyFindings.map(f => `
+        <div class="dp-finding ${f.type}">${f.text}</div>
+      `).join('')}
+    </div>
+  `;
+
+  document.getElementById('detail-overlay').classList.add('open');
+}
+
+function closeDetail(e) {
+  if (e.target === document.getElementById('detail-overlay')) closeDetailBtn();
+}
+function closeDetailBtn() {
+  document.getElementById('detail-overlay').classList.remove('open');
+}
+
+// ─────────────────────────────────────────────────────────────
+// EXPORT CSV
+// ─────────────────────────────────────────────────────────────
+function exportCSV() {
+  const headers = ['ID','Vendor','Category','Tier','Score','Data Types','Owner','Last Assessment','Next Review','Contract Expiry','Contract Value','Status','Open Findings'];
+  const rows = vendors.map(v => [
+    v.id, v.name, v.category, v.tier, v.score.toFixed(1),
+    v.dataTypes.join('; '), v.owner, v.lastAssessment,
+    v.nextReview, v.contractExpiry, v.contractValue,
+    v.status, v.openFindings
+  ]);
+  const csv = [headers, ...rows].map(r => r.map(c => `"${c}"`).join(',')).join('\n');
+  const a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'TPRM_Task01_Risk_Register.csv';
+  a.click();
+}
+
+// ─────────────────────────────────────────────────────────────
+// ADD VENDOR (placeholder)
+// ─────────────────────────────────────────────────────────────
+function openAdd() {
+  alert('In a full implementation, this would open a vendor intake form connected to the onboarding workflow (Task #04).');
+}
+
+// Keyboard shortcut
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeDetailBtn();
+});
+
+// ─────────────────────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────────────────────
+renderSidebar();
+applyFilters();
+</script>
+</body>
+</html>
