@@ -16,11 +16,11 @@ Any publicly available TPRM framework (e.g. Shared Assessments SIG, FSB third-pa
 
 No coding required at this stage. The skill being tested is structured thinking and risk taxonomy design.
 
-# What the register should contain
+What the register should contain
 A well-designed register has three logical layers:
-# Vendor identification — who they are and what they do: vendor name, legal entity, country of incorporation, business contact, internal owner/sponsor, service category, and a brief description of the service.
-# Risk classification — how risky they are: inherent risk tier (Critical / High / Medium / Low), risk domains assessed (data access, operational dependency, financial exposure, regulatory scope), data classification (does the vendor handle PII, financial data, regulated data?), and a composite risk score.
-# Oversight status — where things stand: last assessment date, next review due, outstanding findings count, contract expiry, and current status (Active / Under Review / Offboarding / Offboarded).
+Vendor identification — who they are and what they do: vendor name, legal entity, country of incorporation, business contact, internal owner/sponsor, service category, and a brief description of the service.
+Risk classification — how risky they are: inherent risk tier (Critical / High / Medium / Low), risk domains assessed (data access, operational dependency, financial exposure, regulatory scope), data classification (does the vendor handle PII, financial data, regulated data?), and a composite risk score.
+Oversight status — where things stand: last assessment date, next review due, outstanding findings count, contract expiry, and current status (Active / Under Review / Offboarding / Offboarded).
 
 # Hi, I am Wale Omolere 
 Cybersecurity is what I do — but mentorship is what drives me.
