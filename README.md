@@ -1,5 +1,20 @@
 # Vendor-Supplier-Risk-Register-Dashboard
 Building a structured excel/google sheets risk register to manually log and track vendor risk assessments, scores, and review dates
+This is the perfect starting point — it forces trainees to think about what data TPRM actually needs before they touch any automation. Building it manually first means they'll later appreciate exactly what rules, AI, and agents are replacing.
+
+# What it is
+A third-party risk register is the master record of all vendors an organisation engages with, their associated risk profile, and the current state of oversight. Think of it as the single source of truth that every downstream TPRM process feeds into and reads from.
+At the manual level, trainees build this entirely in a spreadsheet — no automation, no AI. The discipline is in the design: what fields to capture, how to score consistently, and how to make the register usable by a risk team.
+
+# Recommended tools
+Primary: Microsoft Excel or Google Sheets — either works. Excel is more realistic for enterprise TPRM; Google Sheets is easier for collaboration during training.
+Supporting resources trainees should reference:
+
+ISO 27036 (supplier relationships)
+NIST SP 800-161 (supply chain risk)
+Any publicly available TPRM framework (e.g. Shared Assessments SIG, FSB third-party guidance)
+
+No coding required at this stage. The skill being tested is structured thinking and risk taxonomy design.
 
 # Hi, I am Wale Omolere 
 Cybersecurity is what I do — but mentorship is what drives me.
